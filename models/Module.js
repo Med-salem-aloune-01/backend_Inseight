@@ -1,15 +1,20 @@
+import mongoose from 'mongoose';
 
-const mongoose = require("mongoose");
+const moduleSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  description: { type: String },
+  order: { type: Number, default: 0 },
+  course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true }
+}, { timestamps: true });
 
-const moduleSchema = new mongoose.Schema(
-  {
-    titr: { type: String, required: true, trim: true },
-    description: {type: String},
-    ordre: { type: Number, default: 0 },
-    datCreate : Date,
-    cour: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
-  },
-  { timestamps: { createdAt: true, updatedAt: false } }
-);
+export const Module = mongoose.model('Module', moduleSchema);
+const lessonSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  content: { type: String }, 
+  pdfUrl: { type: String },
+  videoUrl: { type: String },
+  order: { type: Number, default: 0 },
+  module: { type: mongoose.Schema.Types.ObjectId, ref: 'Module', required: true }
+}, { timestamps: true });
 
-module.exports = mongoose.model("Module", moduleSchema);
+export const Lesson = mongoose.model('Lesson', lessonSchema);

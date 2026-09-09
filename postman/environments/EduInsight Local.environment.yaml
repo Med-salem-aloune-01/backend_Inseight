@@ -1,0 +1,6 @@
+name: EduInsight Local
+values:
+  - key: token
+    secret: true
+  - key: token
+    value: ''

@@ -3,7 +3,6 @@ const path = require("path");
 const fs = require("fs");
 
 
-// Create folder if not exists
 const uploadDir = "uploads/";
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
@@ -38,4 +37,4 @@ const upload = multer({
 });
 
 
-module.exports = upload;
+module.exports = upload;  
