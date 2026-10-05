@@ -20,13 +20,26 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors({
-  origin: [
-    "https://frontend-inseight-a4iq.vercel.app/",
-    "http://localhost:5173",
-  ],
-  credentials: true,
-}));
+const allowedOrigins = [
+  "https://frontend-inseight-ten.vercel.app",
+  "http://localhost:5173",
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        /^https:\/\/frontend-inseight-.*\.vercel\.app$/.test(origin)
+      ) {
+        return callback(null, true);
+      }
+      callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.get('/', (req, res) => res.send('API is running'));
 
