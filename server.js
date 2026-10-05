@@ -20,7 +20,13 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    "https://frontend-inseight-a4iq.vercel.app/",
+    "http://localhost:5173",
+  ],
+  credentials: true,
+}));
 app.use(express.json());
 app.get('/', (req, res) => res.send('API is running'));
 
