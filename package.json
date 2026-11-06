@@ -1,12 +1,8 @@
 {
   
   "scripts": {
-<<<<<<< HEAD
-    "start": "node server.js"
-=======
     "start": "node server.js",
     "dev": "nodemon server.js"
->>>>>>> 43f4c65 (Mise a jour projet)
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
