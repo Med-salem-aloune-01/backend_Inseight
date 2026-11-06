@@ -15,6 +15,7 @@ import analyticsRoutes from './routes/analyticsRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import chatbotRoutes from './routes/chatbotRoutes.js';
 import certificatesRoutes from './routes/certificateRoutes.js';
+import messageRoutes from './routes/messageRoutes.js';
 
 dotenv.config();
 const app = express();
@@ -47,6 +48,7 @@ connectDB();
 import progressRoutes from './routes/progressRoutes.js';
 
 app.use('/api/progress', progressRoutes);
+app.use('/api/messages', messageRoutes);
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/cours", courseRoutes);

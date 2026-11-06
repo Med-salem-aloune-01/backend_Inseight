@@ -17,7 +17,7 @@ const upload = multer({ dest: 'uploads/' });
 const router = express.Router();
 
 router.get('/', protect, getmyCourses);
-
+router.get('/student', protect, getCourses);
 router.get('/:id', protect, getCourseById);
 
 

@@ -15,6 +15,17 @@ export const getCourseById = async (req, res, next) => {
       });
     }
 
+    if (req.user?.role === 'student') {
+      const student = await Student.findById(req.user.id).select('level');
+
+      if (!student?.level || student.level !== course.level) {
+      return res.status(403).json({
+        success: false,
+        message: 'Accès refusé'
+      });
+      }
+    }
+
    
     if (req.user) {
       const inscription = await Inscription.findOne({
@@ -63,6 +74,11 @@ export const getmyCourses = async (req, res, next) => {
       filter.teacher = req.user.id;
     }
 
+    if (req.user?.role === 'student') {
+      const student = await Student.findById(req.user.id).select('level');
+      filter.level = student?.level || null;
+    }
+
     const [courses, total] = await Promise.all([
       Course.find(filter).populate('teacher department').skip(skip).limit(limit),
       Course.countDocuments(filter),
@@ -107,9 +123,19 @@ export const getCourses = async (req, res, next) => {
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 10));
     const skip = (page - 1) * limit;
 
+    // Students only see courses of the level set by the admin
+    const filter = {};
+    let studentLevel = null;
+
+    if (req.user?.role === 'student') {
+      const student = await Student.findById(req.user.id).select('level');
+      studentLevel = student?.level || null;
+      filter.level = studentLevel; // null => matches no course
+    }
+
     const [courses, total] = await Promise.all([
-      Course.find().populate('teacher department').skip(skip).limit(limit),
-      Course.countDocuments(),
+      Course.find(filter).populate('teacher department').skip(skip).limit(limit),
+      Course.countDocuments(filter),
     ]);
 
     let enrollmentByCourseId = {};
@@ -141,6 +167,7 @@ export const getCourses = async (req, res, next) => {
       total,
       page,
       pages: Math.ceil(total / limit),
+      noLevel: req.user?.role === 'student' && !studentLevel,
     });
   } catch (error) { next(error); }
 };
@@ -211,6 +238,18 @@ export const deleteCourse = async (req, res, next) => {
 
 export const enrollCourse = async (req, res, next) => {
   try {
+    const course = await Course.findById(req.params.id);
+
+    if (!course) {
+      return res.status(404).json({ success: false, message: 'Cours introuvable' });
+    }
+
+    const student = await Student.findById(req.user.id).select('level');
+
+    if (!student?.level || student.level !== course.level) {
+      return res.status(403).json({ success: false, message: 'Accès refusé' });
+    }
+
     const inscription = await Inscription.create({ student: req.user.id, course: req.params.id });
     res.status(201).json({ success: true, data: inscription });
   } catch (error) {
@@ -220,9 +259,7 @@ export const enrollCourse = async (req, res, next) => {
     next(error);
   }
 };
-// ============================================================
-// GET MY INSCRIPTIONS
-// ============================================================
+
 export const getMyInscriptions = async (req, res, next) => {
   try {
 
